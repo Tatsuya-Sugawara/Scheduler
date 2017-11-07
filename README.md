@@ -1,0 +1,2 @@
+# Scheduler
+#Scheduler •ÏX“_  MainActivity   onSelectDayChenge‚Ì’Ç‰Á    ‚»‚Ì‘¼  ScheduleEditActivity Date workDate = new Date(dateParse.getYear(),dateParse.getMonth(),dateParse.getDate()); workDate.setHours(00); workDate.setMinutes(00);         workDate.setSeconds(00); final Date date = workDate;
