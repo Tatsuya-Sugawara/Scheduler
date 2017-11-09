@@ -7,6 +7,12 @@
     android:splitMotionEvents="false"
     tools:context="com.example.username.myscheduler.ScheduleEditActivity">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="380dp"
+        android:background="@drawable/haikei121"/>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"

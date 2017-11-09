@@ -6,6 +6,12 @@
     android:layout_height="wrap_content"
     tools:context="com.example.username.myscheduler.MainActivity">
 
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_main"
+        android:layout_height="100dp"
+        tools:ignore="IncludeLayoutParam" />
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,12 +22,13 @@
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="352dp" />
+        android:layout_height="352dp"
+        android:selectedWeekBackgroundColor="@android:color/holo_red_dark" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="bottom|left"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@android:color/holo_blue_light"
@@ -31,11 +38,5 @@
         app:rippleColor="@color/colorAccent"
         app:srcCompat="@android:drawable/ic_input_add"
         tools:ignore="RtlHardcoded" />
-
-    <include
-        android:id="@+id/include"
-        layout="@layout/content_main"
-        android:layout_height="540dp"
-        tools:ignore="IncludeLayoutParam" />
 
 </android.support.design.widget.CoordinatorLayout>
