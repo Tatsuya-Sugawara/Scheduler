@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.util.ThreadUtil;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -97,7 +98,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
         long scheduleId = getIntent().getLongExtra("schedule_id", -1);
         if (scheduleId != -1) {
-            System.out.println("編集画面でした！！");
+//            System.out.println("編集画面!!");
             RealmResults<Schedule> results = mRealm.where(Schedule.class)
                     .equalTo("id", scheduleId).findAll();
             Schedule schedule = results.first();
@@ -108,7 +109,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
             mDetailEdit.setText(schedule.getDetail());
             mDelete.setVisibility(View.VISIBLE);
         } else {
-            System.out.println("こっちが初期登録だったよ！！");
+//            System.out.println("初期登録!!");
             mDateEdit.setText(MainActivity.onDate);
             mDelete.setVisibility(View.INVISIBLE);
         }
@@ -142,6 +143,9 @@ public class ScheduleEditActivity extends AppCompatActivity {
                 }
             }
             mDetailEdit.setText(extractText(bitmap));
+            Match match = new Match();
+
+            mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear));
 
         } else {
             Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
