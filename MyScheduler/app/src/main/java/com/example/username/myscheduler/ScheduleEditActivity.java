@@ -39,13 +39,15 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
     static final int PHOTO_REQUEST_CODE = 1;
     private TessBaseAPI tessBaseApi;
-    private static final String lang = "eng";
+    private static final String lang = "jpn";
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
 
     private TextView textView;
 
     private Realm mRealm;
+
+    private String result;
     EditText mDateEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
@@ -58,7 +60,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
         DATA_PATH = getFilesDir().toString() + "/OCR/";
 
-        textView = (TextView) findViewById(R.id.textResult);
+       // textView = (TextView) findViewById(R.id.textResult);
 
         Log.v("てすと",DATA_PATH);
         Log.v("てすと",getFilesDir().toString());
@@ -139,7 +141,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            textView.setText(extractText(bitmap));
+            mDetailEdit.setText(extractText(bitmap));
 
         } else {
             Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
