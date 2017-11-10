@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     ScheduleAdapter adapter;
     FloatingActionButton fab;
     public  static  String onDate;
+    public  static String sEAyear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             public  void onSelectedDayChange(CalendarView view, int year,int month,int dayOfMonth){
 
                 onDate = (year + "/" + (month + 1) +  "/" + dayOfMonth);
-
+                sEAyear = String.valueOf(year);
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {startActivity(new Intent(MainActivity.this,ScheduleEditActivity.class));}
