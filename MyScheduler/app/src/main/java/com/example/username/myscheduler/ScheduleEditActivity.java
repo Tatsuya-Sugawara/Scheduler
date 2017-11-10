@@ -30,12 +30,16 @@ public class ScheduleEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule_edit);
         mRealm = Realm.getDefaultInstance();
         mDateEdit = (EditText) findViewById(R.id.dateEdit);
+
         mTitleEdit = (EditText) findViewById(R.id.titleEdit);
         mDetailEdit = (EditText) findViewById(R.id.detailEdit);
         mDelete = (Button) findViewById(R.id.delete);
 
+
+
         long scheduleId = getIntent().getLongExtra("schedule_id", -1);
         if (scheduleId != -1) {
+            System.out.println("編集画面でした！！");
             RealmResults<Schedule> results = mRealm.where(Schedule.class)
                     .equalTo("id", scheduleId).findAll();
             Schedule schedule = results.first();
@@ -46,6 +50,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
             mDetailEdit.setText(schedule.getDetail());
             mDelete.setVisibility(View.VISIBLE);
         } else {
+            System.out.println("こっちが初期登録だったよ！！");
+            mDateEdit.setText(MainActivity.onDate);
             mDelete.setVisibility(View.INVISIBLE);
         }
     }
@@ -108,7 +114,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
             finish();
         }
 
-        System.out.println(date);
+
     }
 
     public void onDeleteTapped(View view) {
