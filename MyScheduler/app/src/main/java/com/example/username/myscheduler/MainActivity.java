@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.CalendarView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.Date;
 
@@ -26,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private CalendarView calendarView;
     private RealmResults<Schedule> schedules;
     ScheduleAdapter adapter;
-    int cnt;
+    FloatingActionButton fab;
+    public  static  String onDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,11 +42,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {startActivity(new Intent(MainActivity.this,ScheduleEditActivity.class));}
+            public void onClick(View view) {
+                if(view == fab){
+                    Toast toast = Toast.makeText(MainActivity.this, "日付を選択してください", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+            }
         });
+
         mR = Realm.getDefaultInstance();
 
         mLV = (ListView) findViewById(R.id.listView);
@@ -53,7 +66,16 @@ public class MainActivity extends AppCompatActivity {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener(){
 
             public  void onSelectedDayChange(CalendarView view, int year,int month,int dayOfMonth){
+
+                onDate = (year + "/" + (month + 1) +  "/" + dayOfMonth);
+
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {startActivity(new Intent(MainActivity.this,ScheduleEditActivity.class));}
+                });
+
                 Date date = new Date(year-1900,month,dayOfMonth);
+
 
                 date.setHours(00);
                 date.setMinutes(00);
