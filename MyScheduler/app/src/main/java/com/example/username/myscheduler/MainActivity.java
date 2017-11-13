@@ -110,6 +110,26 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.aicon);
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE); //Notificationのインポートはv4で
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("PARAM", 1);
+        PendingIntent penintent = PendingIntent.getActivity(this,
+                0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification builder = new NotificationCompat.Builder(this)                  //thisとgetApplicationContext()との違いが判らないのでコメ残す
+                .setContentTitle("筋肉番付")                                     //  タイトル（太字）
+                .setContentText("タップしてアプリを起動します")                //  メッセージテキスト
+                .setPriority(Integer.MAX_VALUE)                                  //通知を一番上に表示する
+                .setAutoCancel(false)                                             //タップされた時通知バーから消去する場合はtrue
+                .setSmallIcon(R.drawable.aicon)                                   //左側のアイコン画像
+                // .setLargeIcon(largeIcon)                                      　  //右側にアイコン画像表示される、お好みで
+                .setContentIntent(penintent)                                       //タップされた時の振舞い
+                .build();                                                          //通知の作成
+        Notification notification = new Notification();
+        notification.flags = Notification.FLAG_NO_CLEAR;
+        NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
+        manager.notify(NOTIFICATION_MINIMUM_ID, builder);
+
 
 
 
