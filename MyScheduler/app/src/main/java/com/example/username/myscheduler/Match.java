@@ -1,12 +1,19 @@
 package com.example.username.myscheduler;
 
 
-import android.util.Log;
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class Match {
-    public String isMatch(String str1,String year,String onDate) {
+public class Match{
+
+
+    public String isMatch(String str1, String year, String onDate) {
         str1 = str1.replaceAll(" ー ","1");
         str1 = str1.replaceAll("ー ","1");
         str1 = str1.replaceAll(" ー","1");
@@ -47,8 +54,10 @@ public class Match {
 
         }else {
             System.out.println("onDate" + onDate);
+
+
             return onDate;
 
         }
-        }
+    }
 }
