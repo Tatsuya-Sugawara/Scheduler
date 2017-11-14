@@ -1,12 +1,19 @@
 package com.example.username.myscheduler;
 
 
-import android.util.Log;
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class Match {
-    public String isMatch(String str1,String year) {
+public class Match{
+
+
+    public String isMatch(String str1, String year, String onDate) {
         str1 = str1.replaceAll(" ー ","1");
         str1 = str1.replaceAll("ー ","1");
         str1 = str1.replaceAll(" ー","1");
@@ -18,7 +25,7 @@ public class Match {
 
 
 
-        System.out.println(str1);
+//        System.out.println(str1);
         String work;
         ArrayList<String> monDay = new ArrayList<String>();
         for(int month = 12;month >= 1; month--){
@@ -28,24 +35,29 @@ public class Match {
                 if(str1.indexOf(work) != -1){
                     str1 = str1.replace(work, " ");
                     monDay.add("/" + month + "/" + day);
-
-                    System.out.println(monDay.get(0));
                 }
             }
         }
-        String[] ret = new String[monDay.size()];
-        ret[0] = "2017/11/1";
-        int ind = 0;
-        String mdWork;
-        for(String md : monDay){
-            mdWork = md;
-            ret[ind] = year + mdWork;
-            ind++;
+        if(monDay.size() != 0){
+            String[] ret = new String[monDay.size()];
+            int ind = 0;
+            String mdWork;
+            System.out.println();
+            for(String md : monDay){
+                mdWork = md;
+                ret[ind] = year + mdWork;
+
+                ind++;
+            }
+            System.out.println("ret[0]" + ret[0]);
+            return ret[0];
+
+        }else {
+            System.out.println("onDate" + onDate);
+
+
+            return onDate;
 
         }
-//        System.out.println(ret[ind]);
-//        Log.e("エラー",ret[0]);
-
-        return ret[0];
     }
 }

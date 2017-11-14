@@ -1,11 +1,19 @@
 package com.example.username.myscheduler;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab;
     public  static  String onDate;
     public  static String sEAyear;
+    private final static int NOTIFICATION_MINIMUM_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent penintent = PendingIntent.getActivity(this,
                 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification builder = new NotificationCompat.Builder(this)                  //thisとgetApplicationContext()との違いが判らないのでコメ残す
-                .setContentTitle("筋肉番付")                                     //  タイトル（太字）
+                .setContentTitle("もやし")                                     //  タイトル（太字）
                 .setContentText("タップしてアプリを起動します")                //  メッセージテキスト
                 .setPriority(Integer.MAX_VALUE)                                  //通知を一番上に表示する
                 .setAutoCancel(false)                                             //タップされた時通知バーから消去する場合はtrue

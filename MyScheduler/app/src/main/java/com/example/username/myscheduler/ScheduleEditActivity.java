@@ -44,11 +44,9 @@ public class ScheduleEditActivity extends AppCompatActivity {
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
 
-    private TextView textView;
 
     private Realm mRealm;
 
-    private String result;
     EditText mDateEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
@@ -63,8 +61,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
        // textView = (TextView) findViewById(R.id.textResult);
 
-        Log.v("てすと",DATA_PATH);
-        Log.v("てすと",getFilesDir().toString());
+//        Log.v("てすと",DATA_PATH);
+//        Log.v("てすと",getFilesDir().toString());
 
         prepareDirectory(DATA_PATH);
         prepareDirectory(DATA_PATH + TESSDATA);
@@ -145,7 +143,10 @@ public class ScheduleEditActivity extends AppCompatActivity {
             mDetailEdit.setText(extractText(bitmap));
             Match match = new Match();
 
-            mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear));
+            mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate));
+            if(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate).equals(MainActivity.onDate)){
+                Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
+            }
 
         } else {
             Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
