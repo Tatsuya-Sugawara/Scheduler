@@ -44,11 +44,9 @@ public class ScheduleEditActivity extends AppCompatActivity {
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
 
-    private TextView textView;
 
     private Realm mRealm;
 
-    private String result;
     EditText mDateEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
@@ -145,7 +143,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
             mDetailEdit.setText(extractText(bitmap));
             Match match = new Match();
 
-            mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear));
+            mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate));
 
         } else {
             Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
