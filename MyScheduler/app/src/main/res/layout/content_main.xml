@@ -12,9 +12,10 @@
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="380dp"
-        android:background="@drawable/haikei121"
+
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="0dp"/>
+        android:layout_marginTop="0dp"
+        tools:ignore="ContentDescription" />//android:background="@drawable/haikei121"
 
     <ListView
         android:id="@+id/listView"

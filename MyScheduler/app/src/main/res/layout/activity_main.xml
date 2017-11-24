@@ -22,8 +22,7 @@
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="352dp"
-        android:selectedWeekBackgroundColor="@android:color/holo_red_dark" />
+        android:layout_height="352dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
