@@ -1,7 +1,6 @@
 package com.example.username.myscheduler;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,28 +18,19 @@ public class ScheduleAdapter extends RealmBaseAdapter<Schedule> {
     private static class ViewHolder {
         TextView date;
         TextView title;
-
-
     }
+
+
     ViewHolder viewHolder;
-
-
-
-
     public ScheduleAdapter(@Nullable OrderedRealmCollection<Schedule> data,CalendarView calendarView) {
         super(data);
         this.calendarView = calendarView;
-
     }
 
 
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-
-
-
         if(convertView == null) {
             convertView = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_2, parent,false);
             viewHolder = new ViewHolder();

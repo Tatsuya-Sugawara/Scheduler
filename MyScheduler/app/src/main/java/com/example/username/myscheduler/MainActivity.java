@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.CalendarView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.Date;
 
@@ -28,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private CalendarView calendarView;
     private RealmResults<Schedule> schedules;
     ScheduleAdapter adapter;
-    int cnt;
-    private static final int NOTIFICATION_MINIMUM_ID = 0;
+    FloatingActionButton fab;
+    public  static  String onDate;
+    public  static String sEAyear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +45,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {startActivity(new Intent(MainActivity.this,ScheduleEditActivity.class));}
+            public void onClick(View view) {
+                if(view == fab){
+                    Toast toast = Toast.makeText(MainActivity.this, "日付を選択してください", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+            }
         });
+
         mR = Realm.getDefaultInstance();
 
         mLV = (ListView) findViewById(R.id.listView);
@@ -57,7 +69,16 @@ public class MainActivity extends AppCompatActivity {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener(){
 
             public  void onSelectedDayChange(CalendarView view, int year,int month,int dayOfMonth){
+
+                onDate = (year + "/" + (month + 1) +  "/" + dayOfMonth);
+                sEAyear = String.valueOf(year);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {startActivity(new Intent(MainActivity.this,ScheduleEditActivity.class));}
+                });
+
                 Date date = new Date(year-1900,month,dayOfMonth);
+
 
                 date.setHours(00);
                 date.setMinutes(00);
@@ -91,27 +112,23 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class/*ここで指定したクラスが通知をタップした時に呼び出される*/);
         intent.putExtra("PARAM", 1);
         PendingIntent penintent = PendingIntent.getActivity(this,
                 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         Notification notification = new Notification.Builder(this)
                 .setContentTitle("もやし")    //  タイトル
                 .setContentText("タップしてアプリを起動します")    //  メッセージ
                 .setContentIntent(penintent)    //  タップされた時の動作
                 .setAutoCancel(false)    //  タップしたときに通知バーから消去する場合はtrue
-                .setSmallIcon(R.drawable.aicon)    //  左側のアイコン画像
-                .build();
+                .setSmallIcon(R.drawable.aicon)   //  左側のアイコン画像
+                .build();                       //通知の作成
+        notification.flags = Notification.FLAG_NO_CLEAR;  //通知が本来ならこのコードで固定されるっぽいが動作しない
+        notification.flags = Notification.FLAG_ONGOING_EVENT; //こっちも無理
 
-        notification.flags = Notification.FLAG_NO_CLEAR;
-
-        nm.notify(NOTIFICATION_MINIMUM_ID, notification);    //引数は適当に作っちゃって、どうぞ
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.notify(1, notification);    //引数は適当に
     }
-
 
     @Override
     public void onDestroy() {

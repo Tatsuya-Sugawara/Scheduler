@@ -40,7 +40,6 @@ public class RequestPermissionsToolImpl implements RequestPermissionsTool {
         for (Map.Entry<Integer, String> permission : permissionsMap.entrySet()) {
             if (!isPermissionGranted(activity, permission.getValue())) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.getValue())) {
-
                     ConfirmationDialog.newInstance(permission.getKey(), permission.getValue()).
                             show(activity.getFragmentManager(), CONFIRMATION_DIALOG);
                 }
@@ -55,7 +54,6 @@ public class RequestPermissionsToolImpl implements RequestPermissionsTool {
 
     @Override
     public boolean isPermissionsGranted(Context context, String[] permissions) {
-
         for (String permission : permissions) {
             if (!isPermissionGranted(context, permission)) {
                 return false;
@@ -81,10 +79,8 @@ public class RequestPermissionsToolImpl implements RequestPermissionsTool {
      * Shows OK/Cancel confirmation dialog about permission.
      */
     public static class ConfirmationDialog extends DialogFragment {
-
         private static final String ARG_PERMISSION = "permission";
         private static final String ARG_REQUEST_CODE = "request_code";
-
         public static ConfirmationDialog newInstance(int permissionKey, String permissionValue) {
             ConfirmationDialog dialog = new ConfirmationDialog();
             Bundle bundle = new Bundle();
