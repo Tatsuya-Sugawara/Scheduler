@@ -1,12 +1,12 @@
 package com.example.username.myscheduler;
 
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
-public class Match {
-    public String isMatch(String str1,String year,String onDate) {
+public class Match{
+
+
+    public String isMatch(String str1, String year, String onDate) {
         str1 = str1.replaceAll(" ー ","1");
         str1 = str1.replaceAll("ー ","1");
         str1 = str1.replaceAll(" ー","1");
@@ -17,8 +17,6 @@ public class Match {
         str1 = str1.replaceAll("一","1");
 
 
-
-//        System.out.println(str1);
         String work;
         ArrayList<String> monDay = new ArrayList<String>();
         for(int month = 12;month >= 1; month--){
@@ -47,8 +45,10 @@ public class Match {
 
         }else {
             System.out.println("onDate" + onDate);
+
+
             return onDate;
 
         }
-        }
+    }
 }
