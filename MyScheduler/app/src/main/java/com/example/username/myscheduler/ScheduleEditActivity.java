@@ -1,8 +1,6 @@
 package com.example.username.myscheduler;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -79,16 +77,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     schedule.setDetail(mDetailEdit.getText().toString());
                 }
             });
-            Snackbar.make(findViewById(android.R.id.content),
-                    "アップデートしました", Snackbar.LENGTH_LONG)
-                    .setAction("戻る", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            finish();
-                        }
-                    })
-                    .setActionTextColor(Color.YELLOW)
-                    .show();
+            Toast.makeText(this, "更新しました", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
             mRealm.executeTransaction(new Realm.Transaction() {
                 @Override

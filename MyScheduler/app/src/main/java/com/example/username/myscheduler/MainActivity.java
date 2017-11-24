@@ -1,12 +1,14 @@
 package com.example.username.myscheduler;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private RealmResults<Schedule> schedules;
     ScheduleAdapter adapter;
     int cnt;
+    private static final int NOTIFICATION_MINIMUM_ID = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,9 +92,24 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("PARAM", 1);
+        PendingIntent penintent = PendingIntent.getActivity(this,
+                0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        Notification notification = new Notification.Builder(this)
+                .setContentTitle("もやし")    //  タイトル
+                .setContentText("タップしてアプリを起動します")    //  メッセージ
+                .setContentIntent(penintent)    //  タップされた時の動作
+                .setAutoCancel(false)    //  タップしたときに通知バーから消去する場合はtrue
+                .setSmallIcon(R.drawable.aicon)    //  左側のアイコン画像
+                .build();
 
+        notification.flags = Notification.FLAG_NO_CLEAR;
+
+        nm.notify(NOTIFICATION_MINIMUM_ID, notification);    //引数は適当に作っちゃって、どうぞ
     }
 
 
