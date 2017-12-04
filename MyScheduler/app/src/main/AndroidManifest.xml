@@ -6,18 +6,21 @@
         android:name=".MySchedulerApplication"
         android:allowBackup="true"
         android:icon="@drawable/aicon"
-        android:label="もやし"
+        android:label="Moyashi"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN"
+                    android:screenOrientation="portrait"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ScheduleEditActivity">
+        <activity android:name=".ScheduleEditActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
