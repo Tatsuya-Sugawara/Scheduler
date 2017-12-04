@@ -4,19 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-//import android.support.v7.util.ThreadUtil;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -36,6 +32,8 @@ import io.realm.RealmResults;
 
 import static android.content.ContentValues.TAG;
 
+//import android.support.v7.util.ThreadUtil;
+
 public class ScheduleEditActivity extends AppCompatActivity {
 
     static final int PHOTO_REQUEST_CODE = 1;
@@ -43,10 +41,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
     private static final String lang = "jpn";
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
-
-
     private Realm mRealm;
-
     EditText mDateEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
@@ -58,16 +53,12 @@ public class ScheduleEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule_edit);
 
         DATA_PATH = getFilesDir().toString() + "/OCR/";
-
-       // textView = (TextView) findViewById(R.id.textResult);
-
-//        Log.v("てすと",DATA_PATH);
-//        Log.v("てすと",getFilesDir().toString());
-
+        // textView = (TextView) findViewById(R.id.textResult);
+        //Log.v("てすと",DATA_PATH);
+        //Log.v("てすと",getFilesDir().toString());
         prepareDirectory(DATA_PATH);
         prepareDirectory(DATA_PATH + TESSDATA);
         copyTessDataFiles(TESSDATA);
-
 
         Button captureImg = (Button) findViewById(R.id.action_btn);
         if (captureImg != null) {
@@ -87,16 +78,14 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
         mRealm = Realm.getDefaultInstance();
         mDateEdit = (EditText) findViewById(R.id.dateEdit);
-
         mTitleEdit = (EditText) findViewById(R.id.titleEdit);
         mDetailEdit = (EditText) findViewById(R.id.detailEdit);
         mDelete = (Button) findViewById(R.id.delete);
 
 
-
         long scheduleId = getIntent().getLongExtra("schedule_id", -1);
         if (scheduleId != -1) {
-//            System.out.println("編集画面!!");
+//編集画面
             RealmResults<Schedule> results = mRealm.where(Schedule.class)
                     .equalTo("id", scheduleId).findAll();
             Schedule schedule = results.first();
@@ -105,9 +94,10 @@ public class ScheduleEditActivity extends AppCompatActivity {
             mDateEdit.setText(date);
             mTitleEdit.setText(schedule.getTitle());
             mDetailEdit.setText(schedule.getDetail());
+
             mDelete.setVisibility(View.VISIBLE);
         } else {
-//            System.out.println("初期登録!!");
+//初期登録
             mDateEdit.setText(MainActivity.onDate);
             mDelete.setVisibility(View.INVISIBLE);
         }
@@ -140,7 +130,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            mDetailEdit.setText(extractText(bitmap));
+            mDetailEdit.setText("");
             Match match = new Match();
 
             mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate));
@@ -263,16 +253,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     schedule.setDetail(mDetailEdit.getText().toString());
                 }
             });
-            Snackbar.make(findViewById(android.R.id.content),
-                    "アップデートしました", Snackbar.LENGTH_LONG)
-                    .setAction("戻る", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            finish();
-                        }
-                    })
-                    .setActionTextColor(Color.YELLOW)
-                    .show();
+            Toast.makeText(this, "更新しました", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
             mRealm.executeTransaction(new Realm.Transaction() {
                 @Override
@@ -291,8 +273,6 @@ public class ScheduleEditActivity extends AppCompatActivity {
             Toast.makeText(this, "追加しました", Toast.LENGTH_SHORT).show();
             finish();
         }
-
-
     }
 
     public void onDeleteTapped(View view) {
@@ -309,6 +289,10 @@ public class ScheduleEditActivity extends AppCompatActivity {
             Toast.makeText(this, "削除しました", Toast.LENGTH_LONG).show();
             finish();
         }
+    }
+
+    public void onBackTapped(View view){
+
     }
 
     @Override

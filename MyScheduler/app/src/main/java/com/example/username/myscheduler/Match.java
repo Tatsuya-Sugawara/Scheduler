@@ -1,13 +1,6 @@
 package com.example.username.myscheduler;
 
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 
 public class Match{
@@ -24,8 +17,6 @@ public class Match{
         str1 = str1.replaceAll("一","1");
 
 
-
-//        System.out.println(str1);
         String work;
         ArrayList<String> monDay = new ArrayList<String>();
         for(int month = 12;month >= 1; month--){
