@@ -125,7 +125,6 @@
         android:id="@+id/action_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
         android:layout_marginBottom="16dp"
         android:text="ギャラリー"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -133,14 +132,5 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:ignore="HardcodedText,MissingConstraints" />
-=======
-        android:text="OCR起動"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="HardcodedText,MissingConstraints"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
->>>>>>> 2d4a26127e400a01297435264c0ca6cebdae07c9
 
 </android.support.constraint.ConstraintLayout>
