@@ -130,7 +130,11 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+<<<<<<< HEAD
             mDetailEdit.setText("");
+=======
+            mDetailEdit.setText(extractText(bitmap));
+>>>>>>> 2d4a26127e400a01297435264c0ca6cebdae07c9
             Match match = new Match();
 
             mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate));
