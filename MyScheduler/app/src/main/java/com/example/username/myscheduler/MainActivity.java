@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+
+
         Intent intent = new Intent(this, MainActivity.class/*ここで指定したクラスが通知をタップした時に呼び出される*/);
         intent.putExtra("PARAM", 1);
         PendingIntent penintent = PendingIntent.getActivity(this,
