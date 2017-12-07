@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Match{
 
 
-    public String isMatch(String str1, String year, String onDate) {
+    public String[] isMatch(String str1, String year, String onDate) {
         str1 = str1.replaceAll(" ー ","1");
         str1 = str1.replaceAll("ー ","1");
         str1 = str1.replaceAll(" ー","1");
@@ -18,6 +18,7 @@ public class Match{
 
 
         String work;
+        String[] ret = new String[1];
         ArrayList<String> monDay = new ArrayList<String>();
         for(int month = 12;month >= 1; month--){
             for(int day = 1;day <= 31;day++){
@@ -30,24 +31,25 @@ public class Match{
             }
         }
         if(monDay.size() != 0){
-            String[] ret = new String[monDay.size()];
+            ret = new String[monDay.size()];
             int ind = 0;
             String mdWork;
             System.out.println();
             for(String md : monDay){
                 mdWork = md;
                 ret[ind] = year + mdWork;
+                System.out.println("ret[" + ind +"]" + ret[ind]);
 
                 ind++;
             }
-            System.out.println("ret[0]" + ret[0]);
-            return ret[0];
+
+            return ret;
 
         }else {
-            System.out.println("onDate" + onDate);
+//            System.out.println("onDate" + onDate);
+            ret[0] = onDate;
 
-
-            return onDate;
+            return ret;
 
         }
     }

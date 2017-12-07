@@ -1,6 +1,11 @@
 package com.example.username.myscheduler;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,6 +47,9 @@ public class ScheduleEditActivity extends AppCompatActivity {
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
     private Realm mRealm;
+
+
+
     EditText mDateEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
@@ -119,6 +127,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent data) {
+        SelectDialog days = new  SelectDialog();
         if (requestCode == PHOTO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Uri uri = null;
             Bitmap bitmap = null;
@@ -130,17 +139,24 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            mDetailEdit.setText("");
+            mDetailEdit.setText(extractText(bitmap));//画像（bitmap）から文字列を全部もらって詳細にブチコム
             Match match = new Match();
 
-            mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate));
+
+            days.setItems(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate));
+            days.show((getFragmentManager()),"tag");
+
+            mDateEdit.setText(days.getRes());
+
             if(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate).equals(MainActivity.onDate)){
                 Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
             }
 
         } else {
-            Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
+
         }
+
     }
 
     private void prepareDirectory(String path) {
@@ -295,9 +311,50 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         mRealm.close();
     }
+
+
+
+    @SuppressLint("ValidFragment")
+    public class SelectDialog extends DialogFragment {
+
+        String[] items;
+        String res;
+
+
+
+
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle("日付の選択")
+                    .setItems(items, new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int which) {
+                            // item_which pressed
+                            res = items[which];
+                            mDateEdit.setText(res);
+                        }
+                    })
+                    .show();
+        }
+        public void setItems(String[] days) {
+            int cnt = 0;
+            items = new String[days.length];
+            for(String item:days){
+                items[cnt] = item;
+                cnt++;
+            }
+        }
+
+        public String getRes() {
+            System.out.println("res:" + res);
+            return res;
+        }
+
+    }
+
 }
