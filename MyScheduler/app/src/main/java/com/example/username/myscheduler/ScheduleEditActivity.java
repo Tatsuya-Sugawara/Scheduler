@@ -51,9 +51,10 @@ public class ScheduleEditActivity extends AppCompatActivity {
     private Realm mRealm;
     ProgressDialog progressDialog;
     Bitmap bitmap = null;
-    String resultOCR = "michiya";
+    String resultOCR;
+    String dateOCR;
     Handler handler;
-
+    Thread dateThread;
 
 
     EditText mDateEdit;
@@ -142,30 +143,20 @@ public class ScheduleEditActivity extends AppCompatActivity {
                 uri = data.getData();
                 try {
                     bitmap = getBitmapFromUri(uri);
-                    abc();
-                    Log.v("てすと","きてるよ");
+                    kakunin();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                SelectDialog days = new  SelectDialog();
-                Match match = new Match();
-                Log.v("てすと","ダイアログテスト");
-                days.setItems(match.isMatch(resultOCR,MainActivity.sEAyear,MainActivity.onDate));
-                days.show((getFragmentManager()),"tag");
-
-                mDateEdit.setText(days.getRes());
             }
-
 //            if(match.isMatch(resultOCR,MainActivity.sEAyear,MainActivity.onDate).equals(MainActivity.onDate)){
 //                Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
 //            }
-
         } else {
 //            Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void abc(){
+    private void kakunin(){
         new AlertDialog.Builder(this)
                 .setTitle("最終確認")
                 .setMessage("本当にこの画像でよろしいでしょうか")
@@ -176,6 +167,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     }
                 })
                 .setNegativeButton("やっぱやめとく",null)
+                .setCancelable(false)
                 .show();
     }
 
@@ -231,6 +223,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
         progressDialog.setTitle("ただいま画像処理中です...");
         progressDialog.setMessage("しばらくお待ちください...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
         progressDialog.show();
 
         Thread ocrThread = new Thread(new Runnable() {
@@ -238,26 +231,37 @@ public class ScheduleEditActivity extends AppCompatActivity {
             public void run() {
 
                 resultOCR = extractText(bitmap);
-
-                while(true){
-                    if(!resultOCR.equals("michiya")){
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mDetailEdit.setText(resultOCR);
-                                progressDialog.dismiss();
-                            }
-                        });
-                        break;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDetailEdit.setText(resultOCR);
+                        progressDialog.dismiss();
+                        dateThread.start();
                     }
-                }
+                });
+            }
+        });
+        dateThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
+                dateOCR = resultOCR;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SelectDialog days = new SelectDialog();
+                        Match match = new Match();
+                        days.setItems(match.isMatch(resultOCR, MainActivity.sEAyear, MainActivity.onDate));
+                        days.setCancelable(false);
+                        days.show((getFragmentManager()), "tag");
 
+                        mDateEdit.setText(days.getRes());
+                    }
+                });
             }
         });
         ocrThread.start();
     }
-
 
     private String extractText(Bitmap bitmap) {
         try {
@@ -360,18 +364,11 @@ public class ScheduleEditActivity extends AppCompatActivity {
         }
     }
 
-    public void onBackTapped(View view){
-
-    }
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         mRealm.close();
     }
-
-
 
     @SuppressLint("ValidFragment")
     public class SelectDialog extends DialogFragment {
