@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.preference.DialogPreference;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -32,7 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -166,7 +169,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                         setOCR();
                     }
                 })
-                .setNegativeButton("やっぱやめとく",null)
+                .setNegativeButton("Cancel",null)
                 .setCancelable(false)
                 .show();
     }
@@ -380,16 +383,38 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
 
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int defaultItem = 0; // デフォルトでチェックされているアイテム
+            final List<Integer> checkedItems = new ArrayList<>();
+            checkedItems.add(defaultItem);
             return new AlertDialog.Builder(getActivity())
                     .setTitle("日付の選択")
-                    .setItems(items, new DialogInterface.OnClickListener(){
+                    .setSingleChoiceItems(items, defaultItem, new DialogInterface.OnClickListener(){
                         public void onClick(DialogInterface dialog, int which) {
-                            // item_which pressed
+                            checkedItems.clear();
+                            checkedItems.add(which);
                             res = items[which];
-                            mDateEdit.setText(res);
+                            System.out.println(res);
                         }
                     })
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int which){
+                            if(!checkedItems.isEmpty()){
+                                Log.d("checkedItem:","" + checkedItems.get(0));
+                            }
+                            mDateEdit.setText(res);
+                        }
+                            })
+                    .setNegativeButton("Cancel",null)
                     .show();
+//                    .setItems(items, new DialogInterface.OnClickListener(){
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            // item_which pressed
+//                            res = items[which];
+//                            mDateEdit.setText(res);
+//                        }
+//                    })
+//                    .setNegativeButton("Cancel",null)
+//                    .show();
         }
         public void setItems(String[] days) {
             int cnt = 0;
