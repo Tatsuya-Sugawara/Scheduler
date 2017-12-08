@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -47,6 +49,10 @@ public class ScheduleEditActivity extends AppCompatActivity {
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
     private Realm mRealm;
+    ProgressDialog progressDialog;
+    Bitmap bitmap = null;
+    String resultOCR = "michiya";
+    Handler handler;
 
 
 
@@ -59,6 +65,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_edit);
+
+        handler = new Handler();
 
         DATA_PATH = getFilesDir().toString() + "/OCR/";
         // textView = (TextView) findViewById(R.id.textResult);
@@ -127,36 +135,48 @@ public class ScheduleEditActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent data) {
-        SelectDialog days = new  SelectDialog();
+
         if (requestCode == PHOTO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Uri uri = null;
-            Bitmap bitmap = null;
             if(data != null) {
                 uri = data.getData();
                 try {
                     bitmap = getBitmapFromUri(uri);
+                    abc();
+                    Log.v("てすと","きてるよ");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                SelectDialog days = new  SelectDialog();
+                Match match = new Match();
+                Log.v("てすと","ダイアログテスト");
+                days.setItems(match.isMatch(resultOCR,MainActivity.sEAyear,MainActivity.onDate));
+                days.show((getFragmentManager()),"tag");
+
+                mDateEdit.setText(days.getRes());
             }
-            mDetailEdit.setText(extractText(bitmap));//画像（bitmap）から文字列を全部もらって詳細にブチコム
-            Match match = new Match();
 
-
-            days.setItems(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate));
-            days.show((getFragmentManager()),"tag");
-
-            mDateEdit.setText(days.getRes());
-
-            if(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate).equals(MainActivity.onDate)){
-                Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
-            }
+//            if(match.isMatch(resultOCR,MainActivity.sEAyear,MainActivity.onDate).equals(MainActivity.onDate)){
+//                Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
+//            }
 
         } else {
 //            Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
-
         }
+    }
 
+    private void abc(){
+        new AlertDialog.Builder(this)
+                .setTitle("最終確認")
+                .setMessage("本当にこの画像でよろしいでしょうか")
+                .setPositiveButton("承諾", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setOCR();
+                    }
+                })
+                .setNegativeButton("やっぱやめとく",null)
+                .show();
     }
 
     private void prepareDirectory(String path) {
@@ -203,6 +223,39 @@ public class ScheduleEditActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setOCR(){
+        Log.v("てすと","あああ");
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("ただいま画像処理中です...");
+        progressDialog.setMessage("しばらくお待ちください...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+
+        Thread ocrThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                resultOCR = extractText(bitmap);
+
+                while(true){
+                    if(!resultOCR.equals("michiya")){
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDetailEdit.setText(resultOCR);
+                                progressDialog.dismiss();
+                            }
+                        });
+                        break;
+                    }
+                }
+
+
+            }
+        });
+        ocrThread.start();
     }
 
 
