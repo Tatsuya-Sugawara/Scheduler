@@ -1,34 +1,6 @@
 package com.example.username.myscheduler;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
-
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 import static android.content.ContentValues.TAG;
 
@@ -39,9 +11,20 @@ public class ScheduleEditActivity extends AppCompatActivity {
     static final int PHOTO_REQUEST_CODE = 1;
     private TessBaseAPI tessBaseApi;
     private static final String lang = "jpn";
+    // 言語選択 0:日本語、1:英語、2:オフライン、その他:General
+    private int lan = 2;
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
     private Realm mRealm;
+    ProgressDialog progressDialog;
+    Bitmap bitmap = null;
+    String resultOCR;
+    String dateOCR;
+    Handler handler;
+    Thread dateThread;
+    ImageView img;
+
+
     EditText mDateEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
@@ -51,6 +34,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_edit);
+
+        handler = new Handler();
 
         DATA_PATH = getFilesDir().toString() + "/OCR/";
         // textView = (TextView) findViewById(R.id.textResult);
@@ -119,28 +104,43 @@ public class ScheduleEditActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent data) {
+
         if (requestCode == PHOTO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Uri uri = null;
-            Bitmap bitmap = null;
             if(data != null) {
                 uri = data.getData();
                 try {
                     bitmap = getBitmapFromUri(uri);
+                    alertDialog();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            mDetailEdit.setText("");
-            Match match = new Match();
-
-            mDateEdit.setText(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate));
-            if(match.isMatch(extractText(bitmap),MainActivity.sEAyear,MainActivity.onDate).equals(MainActivity.onDate)){
-                Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
-            }
-
+//            if(match.isMatch(resultOCR,MainActivity.sEAyear,MainActivity.onDate).equals(MainActivity.onDate)){
+//                Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
+//            }
         } else {
-            Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void alertDialog(){
+        img = new ImageView(this);
+        bitmap = Bitmap.createScaledBitmap(bitmap,600,1000,false);
+        img.setImageBitmap(bitmap);
+        new AlertDialog.Builder(this)
+                .setTitle("最終確認")
+                .setMessage("本当にこの画像でよろしいでしょうか?")
+                .setView(img)
+                .setPositiveButton("承諾", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setOCR();
+                    }
+                })
+                .setNegativeButton("やっぱやめとく",null)
+                .setCancelable(false)
+                .show();
     }
 
     private void prepareDirectory(String path) {
@@ -189,6 +189,51 @@ public class ScheduleEditActivity extends AppCompatActivity {
         }
     }
 
+    private void setOCR(){
+        Log.v("てすと","あああ");
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("ただいま画像処理中です...");
+        progressDialog.setMessage("しばらくお待ちください...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        Thread ocrThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                resultOCR = extractText(bitmap);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDetailEdit.setText(resultOCR);
+                        progressDialog.dismiss();
+                        dateThread.start();
+                    }
+                });
+            }
+        });
+        dateThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                dateOCR = resultOCR;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SelectDialog days = new SelectDialog();
+                        Match match = new Match();
+                        days.setItems(match.isMatch(resultOCR, MainActivity.sEAyear, MainActivity.onDate));
+                        days.setCancelable(false);
+                        days.show((getFragmentManager()), "tag");
+
+                        mDateEdit.setText(days.getRes());
+                    }
+                });
+            }
+        });
+        ocrThread.start();
+    }
 
     private String extractText(Bitmap bitmap) {
         try {
@@ -290,8 +335,36 @@ public class ScheduleEditActivity extends AppCompatActivity {
             finish();
         }
     }
+    private void speech(){
+        // 音声認識が使えるか確認する
+        try {
+            // 音声認識の　Intent インスタンス
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
-    public void onBackTapped(View view){
+            if(lan == 0){
+                // 日本語
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.JAPAN.toString() );
+            }
+            else if(lan == 1){
+                // 英語
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH.toString() );
+            }
+            else if(lan == 2){
+                // Off line mode
+                intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+            }
+            else{
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            }
+
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 100);
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "音声を入力");
+            // インテント発行
+            startActivityForResult(intent, REQUEST_CODE);
+        }
+        catch (ActivityNotFoundException e) {
+            mDetailEdit.setText("No Activity " );
+        }
 
     }
 
@@ -300,4 +373,64 @@ public class ScheduleEditActivity extends AppCompatActivity {
         super.onDestroy();
         mRealm.close();
     }
+
+    @SuppressLint("ValidFragment")
+    public class SelectDialog extends DialogFragment {
+
+        String[] items;
+        String res;
+
+
+
+
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int defaultItem = 0; // デフォルトでチェックされているアイテム
+            final List<Integer> checkedItems = new ArrayList<>();
+            checkedItems.add(defaultItem);
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle("日付の選択")
+                    .setSingleChoiceItems(items, defaultItem, new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int which) {
+                            checkedItems.clear();
+                            checkedItems.add(which);
+                            res = items[which];
+                            System.out.println(res);
+                        }
+                    })
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int which){
+                            if(!checkedItems.isEmpty()){
+                                Log.d("checkedItem:","" + checkedItems.get(0));
+                            }
+                            mDateEdit.setText(res);
+                        }
+                            })
+                    .setNegativeButton("Cancel",null)
+                    .show();
+//                    .setItems(items, new DialogInterface.OnClickListener(){
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            // item_which pressed
+//                            res = items[which];
+//                            mDateEdit.setText(res);
+//                        }
+//                    })
+//                    .setNegativeButton("Cancel",null)
+//                    .show();
+        }
+        public void setItems(String[] days) {
+            int cnt = 0;
+            items = new String[days.length];
+            for(String item:days){
+                items[cnt] = item;
+                cnt++;
+            }
+        }
+
+        public String getRes() {
+            System.out.println("res:" + res);
+            return res;
+        }
+
+    }
+
 }
