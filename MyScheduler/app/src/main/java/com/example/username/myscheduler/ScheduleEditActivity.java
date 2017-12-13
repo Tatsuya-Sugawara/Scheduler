@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,12 +16,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.preference.DialogPreference;
+import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -36,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -49,6 +52,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
     static final int PHOTO_REQUEST_CODE = 1;
     private TessBaseAPI tessBaseApi;
     private static final String lang = "jpn";
+    // 言語選択 0:日本語、1:英語、2:オフライン、その他:General
+    private int lan = 2;
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
     private Realm mRealm;
@@ -58,6 +63,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
     String dateOCR;
     Handler handler;
     Thread dateThread;
+    ImageView img;
 
 
     EditText mDateEdit;
@@ -146,7 +152,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                 uri = data.getData();
                 try {
                     bitmap = getBitmapFromUri(uri);
-                    kakunin();
+                    alertDialog();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -159,17 +165,21 @@ public class ScheduleEditActivity extends AppCompatActivity {
         }
     }
 
-    private void kakunin(){
+    private void alertDialog(){
+        img = new ImageView(this);
+        bitmap = Bitmap.createScaledBitmap(bitmap,600,1000,false);
+        img.setImageBitmap(bitmap);
         new AlertDialog.Builder(this)
                 .setTitle("最終確認")
-                .setMessage("本当にこの画像でよろしいでしょうか")
+                .setMessage("本当にこの画像でよろしいでしょうか?")
+                .setView(img)
                 .setPositiveButton("承諾", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         setOCR();
                     }
                 })
-                .setNegativeButton("Cancel",null)
+                .setNegativeButton("やっぱやめとく",null)
                 .setCancelable(false)
                 .show();
     }
@@ -365,6 +375,38 @@ public class ScheduleEditActivity extends AppCompatActivity {
             Toast.makeText(this, "削除しました", Toast.LENGTH_LONG).show();
             finish();
         }
+    }
+    private void speech(){
+        // 音声認識が使えるか確認する
+        try {
+            // 音声認識の　Intent インスタンス
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+            if(lan == 0){
+                // 日本語
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.JAPAN.toString() );
+            }
+            else if(lan == 1){
+                // 英語
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH.toString() );
+            }
+            else if(lan == 2){
+                // Off line mode
+                intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true);
+            }
+            else{
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            }
+
+            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 100);
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "音声を入力");
+            // インテント発行
+            startActivityForResult(intent, REQUEST_CODE);
+        }
+        catch (ActivityNotFoundException e) {
+            mDetailEdit.setText("No Activity " );
+        }
+
     }
 
     @Override
