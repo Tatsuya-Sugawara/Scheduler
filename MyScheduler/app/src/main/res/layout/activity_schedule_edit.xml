@@ -56,7 +56,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:inputType="date"
+        android:inputType="datetime"
 
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
