@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -74,10 +75,50 @@ public class ScheduleEditActivity extends AppCompatActivity {
     EditText mDetailEdit;
     Button mDelete;
 
+    String onDate;
+    String sEAyear;
+
+
+
+
+    public void ScheduleEditActivity(){
+        int year;
+        int month;
+        int day;
+        System.out.println("コンストラクタ起動");
+        final Calendar CALENDAR = Calendar.getInstance();
+        year = CALENDAR.get(Calendar.YEAR);
+        month = CALENDAR.get(Calendar.MONTH) + 1;
+        day = CALENDAR.get(Calendar.DATE);
+
+        mRealm = Realm.getDefaultInstance();
+        mDateEdit = (EditText) findViewById(R.id.dateEdit);
+        mDatetimeEdit = (EditText)findViewById(R.id.dateTimeEdit);
+        mTitleEdit = (EditText) findViewById(R.id.titleEdit);
+        mDetailEdit = (EditText) findViewById(R.id.detailEdit);
+        mDelete = (Button) findViewById(R.id.delete);
+        mDateEdit.setText(year + "/" + month + "/" + day);
+        if(MainActivity.onDate != null){
+            onDate = MainActivity.onDate;
+        }else{
+            onDate = (year + "/" + month + "/" + day);
+        }
+        if(MainActivity.sEAyear != null){
+            sEAyear = MainActivity.sEAyear;
+        }else{
+            sEAyear = String.valueOf(year);
+        }
+
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_edit);
+        ScheduleEditActivity();
+
+
 
         handler = new Handler();
 
@@ -114,12 +155,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
             });
         }
 
-        mRealm = Realm.getDefaultInstance();
-        mDateEdit = (EditText) findViewById(R.id.dateEdit);
-        mDatetimeEdit = (EditText)findViewById(R.id.dateTimeEdit);
-        mTitleEdit = (EditText) findViewById(R.id.titleEdit);
-        mDetailEdit = (EditText) findViewById(R.id.detailEdit);
-        mDelete = (Button) findViewById(R.id.delete);
+
 
 
         long scheduleId = getIntent().getLongExtra("schedule_id", -1);
@@ -138,7 +174,11 @@ public class ScheduleEditActivity extends AppCompatActivity {
             mDelete.setVisibility(View.VISIBLE);
         } else {
 //初期登録
-            mDateEdit.setText(MainActivity.onDate);
+            if(onDate != null){
+                mDateEdit.setText(onDate);
+            }
+
+            System.out.println(onDate);
             mDelete.setVisibility(View.INVISIBLE);
         }
     }
@@ -171,7 +211,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-//            if(match.isMatch(resultOCR,MainActivity.sEAyear,MainActivity.onDate).equals(MainActivity.onDate)){
+//            if(match.isMatch(resultOCR,MainActivity.sEAyear,onDate).equals(onDate)){
 //                Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
 //            }
         } else {
@@ -190,8 +230,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
     private void alertDialog(){
         img = new ImageView(this);
-        bitmap = Bitmap.createScaledBitmap(bitmap,600,1000,false);
-        img.setImageBitmap(bitmap);
+        img.setImageBitmap(Bitmap.createScaledBitmap(bitmap,600,1000,false));
         new AlertDialog.Builder(this)
                 .setTitle("最終確認")
                 .setMessage("本当にこの画像でよろしいでしょうか?")
@@ -277,6 +316,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
                 });
             }
         });
+
+
         dateThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -287,11 +328,12 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     public void run() {
                         SelectDialog days = new SelectDialog();
                         Match match = new Match();
-                        days.setItems(match.isMatch(resultOCR, MainActivity.sEAyear, MainActivity.onDate));
+                        days.setItems(match.isMatch(resultOCR, sEAyear, onDate));
                         days.setCancelable(false);
                         days.show((getFragmentManager()), "tag");
 
                         mDateEdit.setText(days.getRes());
+                        System.out.println("ダイアログタップ後");
                     }
                 });
             }
@@ -448,7 +490,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
 
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            int defaultItem = 0; // デフォルトでチェックされているアイテム
+            int defaultItem = -1; // デフォルトでチェックされているアイテム
             final List<Integer> checkedItems = new ArrayList<>();
             checkedItems.add(defaultItem);
             return new AlertDialog.Builder(getActivity())
@@ -458,7 +500,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                             checkedItems.clear();
                             checkedItems.add(which);
                             res = items[which];
-                            System.out.println(res);
+//                            System.out.println(res);
                         }
                     })
                     .setPositiveButton("OK", new DialogInterface.OnClickListener(){
@@ -467,6 +509,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                                 Log.d("checkedItem:","" + checkedItems.get(0));
                             }
                             mDateEdit.setText(res);
+
                         }
                             })
                     .setNegativeButton("Cancel",null)
@@ -492,7 +535,11 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
         public String getRes() {
             System.out.println("res:" + res);
-            return res;
+            if(res !=null){
+                return res;
+            }else{
+                return String.valueOf(mDateEdit.getText());
+            }
         }
 
     }
