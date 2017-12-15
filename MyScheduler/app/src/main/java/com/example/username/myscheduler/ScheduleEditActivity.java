@@ -1,6 +1,48 @@
 package com.example.username.myscheduler;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ParcelFileDescriptor;
+import android.speech.RecognizerIntent;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
+
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static android.content.ContentValues.TAG;
 
@@ -9,6 +51,7 @@ import static android.content.ContentValues.TAG;
 public class ScheduleEditActivity extends AppCompatActivity {
 
     static final int PHOTO_REQUEST_CODE = 1;
+    private static final int REQUEST_CODE = 1000;
     private TessBaseAPI tessBaseApi;
     private static final String lang = "jpn";
     // 言語選択 0:日本語、1:英語、2:オフライン、その他:General
@@ -26,6 +69,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
 
     EditText mDateEdit;
+    EditText mDatetimeEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
     Button mDelete;
@@ -36,6 +80,15 @@ public class ScheduleEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule_edit);
 
         handler = new Handler();
+
+        ImageButton voiceToText = (ImageButton) findViewById(R.id.voice_to_text);
+        voiceToText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 音声認識を開始
+                speech();
+            }
+        });
 
         DATA_PATH = getFilesDir().toString() + "/OCR/";
         // textView = (TextView) findViewById(R.id.textResult);
@@ -63,6 +116,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
         mRealm = Realm.getDefaultInstance();
         mDateEdit = (EditText) findViewById(R.id.dateEdit);
+        mDatetimeEdit = (EditText)findViewById(R.id.dateTimeEdit);
         mTitleEdit = (EditText) findViewById(R.id.titleEdit);
         mDetailEdit = (EditText) findViewById(R.id.detailEdit);
         mDelete = (Button) findViewById(R.id.delete);
@@ -77,6 +131,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             String date = sdf.format(schedule.getDate());
             mDateEdit.setText(date);
+            mDatetimeEdit.setText("時間時間時間時間時間");
             mTitleEdit.setText(schedule.getTitle());
             mDetailEdit.setText(schedule.getDetail());
 
@@ -120,7 +175,16 @@ public class ScheduleEditActivity extends AppCompatActivity {
 //                Toast.makeText(this, "日付が読み込めませんでした。\n選択日の日付を入力します。", Toast.LENGTH_LONG).show();
 //            }
         } else {
-//            Toast.makeText(this, "ERROR: Image was not obtained.", Toast.LENGTH_SHORT).show();
+
+        }
+        if(requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            super.onActivityResult(requestCode, resultCode, data);
+            // 認識結果を ArrayList で取得
+            ArrayList<String> candidates = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (candidates.size() > 0) {
+                // 認識結果候補で一番有力なものを表示
+                mDetailEdit.setText(candidates.get(0));
+            }
         }
     }
 
