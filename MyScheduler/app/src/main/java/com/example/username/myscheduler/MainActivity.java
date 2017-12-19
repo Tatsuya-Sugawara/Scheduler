@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
     static int day;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
@@ -74,7 +74,27 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
             }
         });
 
+        System.out.println("getInstance前");
         mR = Realm.getDefaultInstance();
+        try {
+            mR.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    Calendar calendar = Calendar.getInstance();
+                    final  Schedule schedule = new Schedule();
+                    schedule.setDatetime("10:00");
+                    schedule.setDate(calendar.getTime());
+                    schedule.setDetail("aaaaaaaaaaaa");
+                    schedule.setTitle("aaaaaaaaaaaa");
+                    // プライマリーキーが同じならアップデート
+                    realm.copyToRealmOrUpdate(schedule);
+                }
+            });
+        } finally {
+            // getしたらcloseする
+//            mR.close();
+        }
+        System.out.println("Relam　出てる？");
 
         mLV = (ListView) findViewById(R.id.listView);
 

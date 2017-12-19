@@ -98,6 +98,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
         mDetailEdit = (EditText) findViewById(R.id.detailEdit);
         mDelete = (Button) findViewById(R.id.delete);
         mDateEdit.setText(year + "/" + month + "/" + day);
+        mDatetimeEdit.setText("00:00");
         if(MainActivity.onDate != null){
             onDate = MainActivity.onDate;
         }else{
@@ -167,7 +168,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             String date = sdf.format(schedule.getDate());
             mDateEdit.setText(date);
-            mDatetimeEdit.setText("時間時間時間時間時間");
+            mDatetimeEdit.setText(schedule.getDatetime());
             mTitleEdit.setText(schedule.getTitle());
             mDetailEdit.setText(schedule.getDetail());
 
@@ -400,6 +401,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                 public void execute(Realm realm) {
                     Schedule schedule = results.first();
                     schedule.setDate(date);
+                    schedule.setDatetime(mDatetimeEdit.getText().toString());
                     schedule.setTitle(mTitleEdit.getText().toString());
                     schedule.setDetail(mDetailEdit.getText().toString());
                 }
@@ -416,6 +418,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     Schedule schedule
                             = realm.createObject(Schedule.class, new Long(nextId));
                     schedule.setDate(date);
+                    schedule.setDatetime(mDatetimeEdit.getText().toString());
                     schedule.setTitle(mTitleEdit.getText().toString());
                     schedule.setDetail(mDetailEdit.getText().toString());
                 }
