@@ -13,6 +13,7 @@ public class Schedule extends RealmObject {
     @PrimaryKey
     private long id;
     private Date date;
+    private String datetime;
     private String title;
     private String detail;
 
@@ -46,5 +47,13 @@ public class Schedule extends RealmObject {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    public String getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
     }
 }
