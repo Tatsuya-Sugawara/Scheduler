@@ -36,16 +36,20 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
     FloatingActionButton fab;
     public  static  String onDate;
     public  static String sEAyear;
-    final Calendar calendar = Calendar.getInstance();
+    Calendar calendar = Calendar.getInstance();
+
+    static int year;
+
+    static int month;
+
+    static int day;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        int year = calendar.get(Calendar.YEAR);
-
-        int month = calendar.get(Calendar.MONTH);
-
-        int day = calendar.get(Calendar.DATE);
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DATE);
 
         if (Build.VERSION.SDK_INT >= 19) {
             View decor = this.getWindow().getDecorView();
@@ -70,7 +74,27 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
             }
         });
 
+        System.out.println("getInstance前");
         mR = Realm.getDefaultInstance();
+        try {
+            mR.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    Calendar calendar = Calendar.getInstance();
+                    final  Schedule schedule = new Schedule();
+                    schedule.setDatetime("10:00");
+                    schedule.setDate(calendar.getTime());
+                    schedule.setDetail("aaaaaaaaaaaa");
+                    schedule.setTitle("aaaaaaaaaaaa");
+                    // プライマリーキーが同じならアップデート
+                    realm.copyToRealmOrUpdate(schedule);
+                }
+            });
+        } finally {
+            // getしたらcloseする
+//            mR.close();
+        }
+        System.out.println("Relam　出てる？");
 
         mLV = (ListView) findViewById(R.id.listView);
 
@@ -92,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
 
 
-        Intent intent = new Intent(this, MainActivity.class/*ここで指定したクラスが通知をタップした時に呼び出される*/);
+        Intent intent = new Intent(this, ScheduleEditActivity.class/*ここで指定したクラスが通知をタップした時に呼び出される*/);
         intent.putExtra("PARAM", 1);
         PendingIntent penintent = PendingIntent.getActivity(this,
                 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
