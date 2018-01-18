@@ -38,7 +38,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dateEdit"
         tools:ignore="RtlHardcoded"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        android:clickable="true"/>
 
     <EditText
         android:id="@+id/dateEdit"

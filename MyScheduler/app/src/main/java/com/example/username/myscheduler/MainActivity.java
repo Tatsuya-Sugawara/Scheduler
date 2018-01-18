@@ -14,7 +14,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.CalendarView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -25,6 +27,10 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 import static java.util.Calendar.YEAR;
+
+/**
+ *
+ */
 
 public class MainActivity extends AppCompatActivity implements CalendarView.OnDateChangeListener{
 
@@ -94,11 +100,13 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
             // getしたらcloseする
 //            mR.close();
         }
-        System.out.println("Relam　出てる？");
+//        System.out.println("Relam　出てる？");
 
         mLV = (ListView) findViewById(R.id.listView);
 
         calendarView = (CalendarView) findViewById(R.id.calendarView);
+
+//        calendarView = new CalendarView(this);
 
         calendarView.setOnDateChangeListener(this);
 
@@ -132,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nm.notify(1, notification);    //引数は適当に
+
     }
 
     @Override
