@@ -22,6 +22,7 @@
         <activity android:name=".ScheduleEditActivity"
             android:screenOrientation="portrait">
         </activity>
+
     </application>
 
 </manifest>

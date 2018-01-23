@@ -6,11 +6,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +26,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -70,7 +74,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
 
     EditText mDateEdit;
-    EditText mDatetimeEdit;
+    TextView mDatetimeEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
     Button mDelete;
@@ -78,27 +82,31 @@ public class ScheduleEditActivity extends AppCompatActivity {
     String onDate;
     String sEAyear;
 
+    TimePickerDialog timePickerDialog;
+
 
 
 
     public void ScheduleEditActivity(){
-        int year;
-        int month;
-        int day;
-        System.out.println("コンストラクタ起動");
+//        System.out.println("コンストラクタ起動");
         final Calendar CALENDAR = Calendar.getInstance();
-        year = CALENDAR.get(Calendar.YEAR);
-        month = CALENDAR.get(Calendar.MONTH) + 1;
-        day = CALENDAR.get(Calendar.DATE);
+        int year = CALENDAR.get(Calendar.YEAR);
+        int month = CALENDAR.get(Calendar.MONTH) + 1;
+        int day = CALENDAR.get(Calendar.DATE);
+        final int hour = CALENDAR.get(Calendar.HOUR_OF_DAY);
+        int minute  =CALENDAR.get(Calendar.MINUTE);
+
+
+//        timePickerDialog.show();
 
         mRealm = Realm.getDefaultInstance();
         mDateEdit = (EditText) findViewById(R.id.dateEdit);
-        mDatetimeEdit = (EditText)findViewById(R.id.dateTimeEdit);
+        mDatetimeEdit = (TextView)findViewById(R.id.dateTimeEdit);
         mTitleEdit = (EditText) findViewById(R.id.titleEdit);
         mDetailEdit = (EditText) findViewById(R.id.detailEdit);
         mDelete = (Button) findViewById(R.id.delete);
         mDateEdit.setText(year + "/" + month + "/" + day);
-        mDatetimeEdit.setText("00:00");
+//        mDatetimeEdit.setEnabled(false);
         if(MainActivity.onDate != null){
             onDate = MainActivity.onDate;
         }else{
@@ -109,7 +117,31 @@ public class ScheduleEditActivity extends AppCompatActivity {
         }else{
             sEAyear = String.valueOf(year);
         }
+        final SimpleDateFormat sdf = new SimpleDateFormat(" HH:mm ");
+        final Date workDate = new Date();
+        workDate.setDate(Calendar.DATE);
 
+        timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        workDate.setHours(hourOfDay);
+                        workDate.setMinutes(minute);
+                        String str = sdf.format(workDate);
+//                        mDatetimeEdit.setText(String.valueOf(hourOfDay) + ":" + String.valueOf(minute));
+//                        mDatetimeEdit.setPaintFlags(mDatetimeEdit.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                        mDatetimeEdit.setText(str);
+                    }
+                }, hour, minute, true);
+        mDatetimeEdit.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        timePickerDialog.show();
+                        System.out.print("うごけえええええええええ");
+                    }
+                }
+        );
 
     }
 
@@ -181,7 +213,10 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
             System.out.println(onDate);
             mDelete.setVisibility(View.INVISIBLE);
+
+
         }
+
     }
 
     private void selectGalleryNamekuzi() {
