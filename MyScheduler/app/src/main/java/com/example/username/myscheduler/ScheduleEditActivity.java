@@ -404,6 +404,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     schedule.setDatetime(mDatetimeEdit.getText().toString());
                     schedule.setTitle(mTitleEdit.getText().toString());
                     schedule.setDetail(mDetailEdit.getText().toString());
+                    /*↓CompactCalendarViewへの追加↓*/
                 }
             });
             Toast.makeText(this, "更新しました", Toast.LENGTH_SHORT).show();
