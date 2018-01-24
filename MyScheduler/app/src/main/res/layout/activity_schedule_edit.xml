@@ -8,14 +8,6 @@
     tools:context="com.example.username.myscheduler.ScheduleEditActivity"
     tools:ignore="ExtraText">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="380dp"
-        tools:ignore="ContentDescription"
-        tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="0dp" />android:background="@drawable/haikei121"
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"

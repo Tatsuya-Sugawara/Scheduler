@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.example.username.myscheduler.domain.Event;
+import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,8 +39,12 @@ public class CompactCalendarTab extends Fragment {
     private CompactCalendarView compactCalendarView;
     private ActionBar toolbar;
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        System.out.println("tabうごいてる？");
+
         View v = inflater.inflate(R.layout.activity_main, container, false);
 
         final List<String> mutableBookings = new ArrayList<>();
@@ -50,6 +55,7 @@ public class CompactCalendarTab extends Fragment {
         // compactCalendarView.setCurrentDayBackgroundColor(getResources().getColor(R.color.black));
         // below allows you to configure colors for the current day the user has selected
         // compactCalendarView.setCurrentSelectedDayBackgroundColor(getResources().getColor(R.color.dark_red));
+        compactCalendarView = (CompactCalendarView) v.findViewById(R.id.compactcalendar_view);
         compactCalendarView.setUseThreeLetterAbbreviation(false);
         loadEvents();
         loadEventsForYear(2018);
@@ -104,12 +110,14 @@ public class CompactCalendarTab extends Fragment {
     }
 
     private void loadEvents() {
+        System.out.println("loadEventsうごいてる？");
         addEvents(-1, -1);
         addEvents(Calendar.DECEMBER, -1);
         addEvents(Calendar.AUGUST, -1);
     }
 
     private void loadEventsForYear(int year) {
+        System.out.println("loadEventsForYearうごいてる？");
         addEvents(Calendar.DECEMBER, year);
         addEvents(Calendar.AUGUST, year);
     }
@@ -123,6 +131,7 @@ public class CompactCalendarTab extends Fragment {
     }
 
     private void addEvents(int month, int year) {
+
         currentCalender.setTime(new Date());
         currentCalender.set(Calendar.DAY_OF_MONTH, 1);
         Date firstDayOfMonth = currentCalender.getTime();
@@ -142,14 +151,14 @@ public class CompactCalendarTab extends Fragment {
             long timeInMillis = currentCalender.getTimeInMillis();
 
             List<Event> events = getEvents(timeInMillis, i);
-
- //           compactCalendarView.addEvents(events);
+            System.out.println(" いべんと" + events);
+//            compactCalendarView.addEvents(events);
         }
     }
 
 
 
-
+    //↓このメソッドはイベントがいくつあるかの判定をして何個ドットを打つか、色をどうするかを決めているっポイ
     private List<Event> getEvents(long timeInMillis, int day) {
         if (day < 2) {
             return Arrays.asList(new Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + new Date(timeInMillis)));

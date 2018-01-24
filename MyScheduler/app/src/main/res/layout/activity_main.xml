@@ -16,7 +16,7 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="382sp"
+        android:layout_height="400dp"
         android:background="@drawable/haikei121"
         android:orientation="vertical">
 
@@ -32,7 +32,7 @@
         <com.github.sundeepk.compactcalendarview.CompactCalendarView
             android:id="@+id/compactcalendar_view"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="370dp"
             app:compactCalendarBackgroundColor="#00000000"
             app:compactCalendarCurrentSelectedDayBackgroundColor="#00FA9A"
             app:compactCalendarCurrentDayBackgroundColor="#FFFFF0"

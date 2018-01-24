@@ -6,7 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
-import android.app.usage.UsageEvents;
+import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,9 +25,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.example.username.myscheduler.domain.Event;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -74,13 +75,15 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
 
     EditText mDateEdit;
-    EditText mDatetimeEdit;
+    TextView mDatetimeEdit;
     EditText mTitleEdit;
     EditText mDetailEdit;
     Button mDelete;
 
     String onDate;
     String sEAyear;
+
+    TimePickerDialog timePickerDialog;
 
 
 
@@ -96,7 +99,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
         mRealm = Realm.getDefaultInstance();
         mDateEdit = (EditText) findViewById(R.id.dateEdit);
-        mDatetimeEdit = (EditText)findViewById(R.id.dateTimeEdit);
+        mDatetimeEdit = (TextView)findViewById(R.id.dateTimeEdit);
         mTitleEdit = (EditText) findViewById(R.id.titleEdit);
         mDetailEdit = (EditText) findViewById(R.id.detailEdit);
         mDelete = (Button) findViewById(R.id.delete);
@@ -112,6 +115,36 @@ public class ScheduleEditActivity extends AppCompatActivity {
         }else{
             sEAyear = String.valueOf(year);
         }
+
+        //テーマピッカーここから
+        final int hour = CALENDAR.get(Calendar.HOUR_OF_DAY);
+        int minute  =CALENDAR.get(Calendar.MINUTE);
+
+        final SimpleDateFormat sdf = new SimpleDateFormat(" HH:mm ");
+        final Date workDate = new Date();
+        workDate.setDate(Calendar.DATE);
+
+        timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        workDate.setHours(hourOfDay);
+                        workDate.setMinutes(minute);
+                        String str = sdf.format(workDate);
+//                        mDatetimeEdit.setText(String.valueOf(hourOfDay) + ":" + String.valueOf(minute));
+//                        mDatetimeEdit.setPaintFlags(mDatetimeEdit.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                        mDatetimeEdit.setText(str);
+                    }
+                }, hour, minute, true);
+        mDatetimeEdit.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        timePickerDialog.show();
+                    }
+                }
+        );
+//データピッカーここまで
 
 
     }
@@ -182,7 +215,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                 mDateEdit.setText(onDate);
             }
 
-            System.out.println(onDate);
+
             mDelete.setVisibility(View.INVISIBLE);
         }
     }
@@ -407,9 +440,6 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     schedule.setDatetime(mDatetimeEdit.getText().toString());
                     schedule.setTitle(mTitleEdit.getText().toString());
                     schedule.setDetail(mDetailEdit.getText().toString());
-                    /*↓CompactCalendarViewへの追加↓*/
-
-
                 }
             });
             Toast.makeText(this, "更新しました", Toast.LENGTH_SHORT).show();

@@ -45,7 +45,9 @@ import static java.util.Calendar.YEAR;
 public class MainActivity extends AppCompatActivity implements CalendarView.OnDateChangeListener{
 
     private Toolbar toolbar;
-    private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("yyyy- MMMM", Locale.getDefault());
+    private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("yyyy - MMMM", Locale.getDefault());
+    private SimpleDateFormat dateOfYear = new SimpleDateFormat("yyyyy");
+    private SimpleDateFormat dateOfMonth = new SimpleDateFormat("M");
     private Realm mR;
     private ListView mLV;
     private CalendarView cv;
@@ -56,6 +58,10 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
     FloatingActionButton fab;
     public  static  String onDate;
     public  static String sEAyear;
+
+    static String changeY;
+
+    static String changeM;
 
     static int year;
 
@@ -71,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DATE);
+
+        //System.out.println("タップした日付が出るはず　＝＞" + year + "/" + month +  "/"  + day );
+
 
         if (Build.VERSION.SDK_INT >= 19) {
             View decor = this.getWindow().getDecorView();
@@ -92,10 +101,10 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         actionBar.setTitle(null);
 
         calendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
+        //calendarView.addEvents(0,2);
         Date curDate = Calendar.getInstance().getTime();
         calendarView.setCurrentDate(curDate);
         calendarView.setShouldDrawDaysHeader(true);//選択した日にイベントがある場合でもイベントを表示
-        calendar.setFirstDayOfWeek(Calendar.SUNDAY);
         calendarView.drawSmallIndicatorForEvents(true);
         calendarView.setUseThreeLetterAbbreviation(true);
 
@@ -104,15 +113,21 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         calendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
-                System.out.println("なんででないんですか");
                 cv =  new CalendarView(
                         MainActivity.this
                 );
                 Date d = dateClicked;
                 cv.setDate(d.getDate());
                 System.out.println(cv.getDate());
-//                cv.setOnDateChangeListener(this);
-                //Toast.makeText(MainActivity.this, "Date : " + dateClicked.toString(), Toast.LENGTH_SHORT).show();
+                cv.setOnDateChangeListener(MainActivity.this);
+                changeY = dateOfYear.format(calendarView.getFirstDayOfCurrentMonth());
+                year = Integer.parseInt(changeY);//←↑年のSimpleDateFormatがだるいので変数に代入してキャストで無理矢理
+                changeM = dateOfMonth.format(calendarView.getFirstDayOfCurrentMonth());
+                month = Integer.parseInt(changeM);//←↑月もややこしいので変数に代入してそれキャスト
+                day = (int)cv.getDate();      //getDateがlong型だったのでキャストしたらいけた
+                onSelectedDayChange(cv,year,month - 1,day);
+                System.out.println("Monthは"+month+"で,changeMは"+changeM);
+                //System.out.println("タップした日付が出るはず　＝＞" + year + "/" + month +  "/"  + cv.getDate() );
             }
 
             @Override
@@ -167,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
 
 
-        onSelectedDayChange(cv,year,month,day);
+
 
         mLV.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
@@ -209,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
     }
 
     @Override
-    public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+    public void onSelectedDayChange(@NonNull  CalendarView view, int year, int month, int dayOfMonth) {
         onDate = (year + "/" + (month + 1) +  "/" + dayOfMonth);
         sEAyear = String.valueOf(year);
         fab.setOnClickListener(new View.OnClickListener() {
