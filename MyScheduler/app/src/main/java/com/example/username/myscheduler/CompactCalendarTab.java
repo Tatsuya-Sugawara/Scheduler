@@ -5,9 +5,7 @@ package com.example.username.myscheduler;
  */
 
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -16,14 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
-//import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.example.username.myscheduler.domain.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,36 +27,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
-import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 public class CompactCalendarTab extends Fragment {
 
@@ -76,7 +40,7 @@ public class CompactCalendarTab extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_main,container,false);
+        View v = inflater.inflate(R.layout.activity_main, container, false);
 
         final List<String> mutableBookings = new ArrayList<>();
 
@@ -164,24 +128,44 @@ public class CompactCalendarTab extends Fragment {
         Date firstDayOfMonth = currentCalender.getTime();
 
         // TODO
-//        for (int i = 0; i < 6; i++) {
-//            currentCalender.setTime(firstDayOfMonth);
-//            if (month > -1) {
-//                currentCalender.set(Calendar.MONTH, month);
-//            }
-//            if (year > -1) {
-//                currentCalender.set(Calendar.ERA, GregorianCalendar.AD);
-//                currentCalender.set(Calendar.YEAR, year);
-//            }
-//            currentCalender.add(Calendar.DATE, i);
-//            setToMidnight(currentCalender);
-//            long timeInMillis = currentCalender.getTimeInMillis();
-//
-//            List<Event> events = getEvents(timeInMillis, i);
-//
-//            compactCalendarView.addEvents(events);
-//        }
+        for (int i = 0; i < 6; i++) {
+            currentCalender.setTime(firstDayOfMonth);
+            if (month > -1) {
+                currentCalender.set(Calendar.MONTH, month);
+            }
+            if (year > -1) {
+                currentCalender.set(Calendar.ERA, GregorianCalendar.AD);
+                currentCalender.set(Calendar.YEAR, year);
+            }
+            currentCalender.add(Calendar.DATE, i);
+            setToMidnight(currentCalender);
+            long timeInMillis = currentCalender.getTimeInMillis();
+
+            List<Event> events = getEvents(timeInMillis, i);
+
+ //           compactCalendarView.addEvents(events);
+        }
     }
+
+
+
+
+    private List<Event> getEvents(long timeInMillis, int day) {
+        if (day < 2) {
+            return Arrays.asList(new Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + new Date(timeInMillis)));
+        } else if ( day > 2 && day <= 4) {
+            return Arrays.asList(
+                    new Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + new Date(timeInMillis)),
+                    new Event(Color.argb(255, 100, 68, 65), timeInMillis, "Event 2 at " + new Date(timeInMillis)));
+        } else {
+            return Arrays.asList(
+                    new Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + new Date(timeInMillis) ),
+                    new Event(Color.argb(255, 100, 68, 65), timeInMillis, "Event 2 at " + new Date(timeInMillis)),
+                    new Event(Color.argb(255, 70, 68, 65), timeInMillis, "Event 3 at " + new Date(timeInMillis)));
+        }
+    }
+
+
 
     private void setToMidnight(Calendar calendar) {
         calendar.set(Calendar.HOUR_OF_DAY, 0);

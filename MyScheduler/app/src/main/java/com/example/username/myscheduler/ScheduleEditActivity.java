@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.app.usage.UsageEvents;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.username.myscheduler.domain.Event;
+import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
@@ -60,6 +63,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
     private String DATA_PATH;
     private static final String TESSDATA = "tessdata";
     private Realm mRealm;
+    private CompactCalendarView calendarView;
     ProgressDialog progressDialog;
     Bitmap bitmap = null;
     String resultOCR;
@@ -77,7 +81,6 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
     String onDate;
     String sEAyear;
-
 
 
 
@@ -405,6 +408,8 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     schedule.setTitle(mTitleEdit.getText().toString());
                     schedule.setDetail(mDetailEdit.getText().toString());
                     /*↓CompactCalendarViewへの追加↓*/
+
+
                 }
             });
             Toast.makeText(this, "更新しました", Toast.LENGTH_SHORT).show();

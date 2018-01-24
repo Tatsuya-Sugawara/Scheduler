@@ -1,6 +1,5 @@
 package com.example.username.myscheduler;
 
-import android.app.ActionBar;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,7 +16,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
-import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
+import com.example.username.myscheduler.domain.Event;
 
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                 cv.setDate(d.getDate());
                 System.out.println(cv.getDate());
 //                cv.setOnDateChangeListener(this);
-                Toast.makeText(MainActivity.this, "Date : " + dateClicked.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "Date : " + dateClicked.toString(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -185,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
         /*191行まで常駐通知の作成*/
         Intent intent = new Intent(this, ScheduleEditActivity.class/*ここで指定したクラスが通知をタップした時に呼び出される*/);
-        //intent.putExtra("PARAM", 1);
+        intent.putExtra("PARAM", 1);
         PendingIntent penintent = PendingIntent.getActivity(this,
                 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification notification = new Notification.Builder(this)
@@ -195,8 +194,8 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                 .setAutoCancel(false)    //  タップしたときに通知バーから消去する場合はtrue
                 .setSmallIcon(R.drawable.aicon)   //  左側のアイコン画像
                 .build();                       //通知の作成
-        //notification.flags = Notification.FLAG_NO_CLEAR;  //通知が本来ならこのコードで固定されるっぽいが動作しない
-        //notification.flags = Notification.FLAG_ONGOING_EVENT; //こっちも無理
+        notification.flags = Notification.FLAG_NO_CLEAR;  //通知が本来ならこのコードで固定されるっぽいが動作しない
+        notification.flags = Notification.FLAG_ONGOING_EVENT; //こっちも無理
 
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nm.notify(1, notification);    //引数は適当に
