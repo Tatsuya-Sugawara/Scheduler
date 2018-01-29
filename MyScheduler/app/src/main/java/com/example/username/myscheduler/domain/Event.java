@@ -2,13 +2,15 @@ package com.example.username.myscheduler.domain;
 
 import android.support.annotation.Nullable;
 
+import java.util.Date;
+
 public class Event {
 
     private int color;
     private long timeInMillis;
     private Object data;
 
-    public Event(long timeInMillis) {
+    public Event(int color, long timeInMillis) {
         this.color = color;
         this.timeInMillis = timeInMillis;
     }

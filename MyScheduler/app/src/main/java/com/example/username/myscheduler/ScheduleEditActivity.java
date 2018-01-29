@@ -30,6 +30,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
+import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
@@ -50,12 +51,15 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import static android.content.ContentValues.TAG;
+import static java.security.AccessController.getContext;
 
 //import android.support.v7.util.ThreadUtil;
 
 public class ScheduleEditActivity extends AppCompatActivity {
 
     static final int PHOTO_REQUEST_CODE = 1;
+    static int finM;
+    static int finD;
     private static final int REQUEST_CODE = 1000;
     private TessBaseAPI tessBaseApi;
     private static final String lang = "jpn";
@@ -65,6 +69,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
     private static final String TESSDATA = "tessdata";
     private Realm mRealm;
     private CompactCalendarView calendarView;
+    private CalendarDayEvent event;
     ProgressDialog progressDialog;
     Bitmap bitmap = null;
     String resultOCR;
@@ -413,22 +418,28 @@ public class ScheduleEditActivity extends AppCompatActivity {
 
 
     public void onSaveTapped(View view) {
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         Date dateParse = new Date();
         try {
+            System.out.println("でーとぱーす君" );
             dateParse = sdf.parse(mDateEdit.getText().toString());
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
+        System.out.println(dateParse);
+        String changeM = new SimpleDateFormat("MM").format(dateParse);
+        finM = Integer.parseInt(changeM);
+        String changeD = new SimpleDateFormat("dd").format(dateParse);
+        finD = Integer.parseInt(changeD);
+        //ma.addEventsC(finM,finD);
         Date workDate  = new Date(dateParse.getYear(),dateParse.getMonth(),dateParse.getDate());
         workDate.setHours(00);
         workDate.setMinutes(00);
         workDate.setSeconds(00);
-
         final Date date = workDate;
+       // System.out.println(Integer.parseInt(mDateEdit.getText().toString()));
         long scheduleId = getIntent().getLongExtra("schedule_id", -1);
+
         if (scheduleId != -1) {
             final RealmResults<Schedule> results = mRealm.where(Schedule.class)
                     .equalTo("id", scheduleId).findAll();
@@ -443,7 +454,7 @@ public class ScheduleEditActivity extends AppCompatActivity {
                 }
             });
             Toast.makeText(this, "更新しました", Toast.LENGTH_SHORT).show();
-            finish();
+//            finish();
         } else {
             mRealm.executeTransaction(new Realm.Transaction() {
                 @Override
@@ -459,10 +470,14 @@ public class ScheduleEditActivity extends AppCompatActivity {
                     schedule.setDetail(mDetailEdit.getText().toString());
                 }
             });
-
             Toast.makeText(this, "追加しました", Toast.LENGTH_SHORT).show();
-            finish();
+//            finish();
         }
+        System.out.println("ふぃんM = " + finM + "ふぃんD = " + finD);
+
+ //       MainActivity.addEventsC(finM,finD);
+//        ma.addEventsC(1,27);
+        finish();
     }
 
     public void onDeleteTapped(View view) {

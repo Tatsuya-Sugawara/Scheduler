@@ -38,7 +38,8 @@
             app:compactCalendarCurrentDayBackgroundColor="#FFFFF0"
             app:compactCalendarTargetHeight="250dp"
             app:compactCalendarTextColor="#000000"
-            app:compactCalendarTextSize="15sp" />
+            app:compactCalendarTextSize="15sp"
+            />
     </LinearLayout>
 
 

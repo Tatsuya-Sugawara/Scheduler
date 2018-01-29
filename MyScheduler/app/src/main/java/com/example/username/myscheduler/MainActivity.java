@@ -3,20 +3,15 @@ package com.example.username.myscheduler;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
-import com.example.username.myscheduler.domain.Event;
 
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,34 +19,36 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.CalendarView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.github.sundeepk.compactcalendarview.CompactCalendarView;
+import com.github.sundeepk.compactcalendarview.domain.CalendarDayEvent;
+
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
-import static java.util.Calendar.YEAR;
-
 public class MainActivity extends AppCompatActivity implements CalendarView.OnDateChangeListener{
 
     private Toolbar toolbar;
+    private SimpleDateFormat checkAll = new SimpleDateFormat("yyyy/MM/dd");
     private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("yyyy - MMMM", Locale.getDefault());
     private SimpleDateFormat dateOfYear = new SimpleDateFormat("yyyyy");
     private SimpleDateFormat dateOfMonth = new SimpleDateFormat("M");
+    private SimpleDateFormat dateOfDay = new SimpleDateFormat("d");
     private Realm mR;
     private ListView mLV;
     private CalendarView cv;
-    private CompactCalendarView calendarView;
+    private static
+
+    CompactCalendarView calendarView;
+//    static CompactCalendarView calendarViewAE;
     private RealmResults<Schedule> schedules;
     private Calendar calendar = Calendar.getInstance();
     ScheduleAdapter adapter;
@@ -72,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("test","なんで返信くれないの？？？ひどいよ。。。");
+        //Log.v("test","なんで返信くれないの？？？ひどいよ。。。");
 
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
@@ -101,14 +98,20 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         actionBar.setTitle(null);
 
         calendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
-        //calendarView.addEvents(0,2);
         Date curDate = Calendar.getInstance().getTime();
         calendarView.setCurrentDate(curDate);
         calendarView.setShouldDrawDaysHeader(true);//選択した日にイベントがある場合でもイベントを表示
         calendarView.drawSmallIndicatorForEvents(true);
         calendarView.setUseThreeLetterAbbreviation(true);
-
         actionBar.setTitle("　　　　　　"+dateFormatForMonth.format(calendarView.getFirstDayOfCurrentMonth()));
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(curDate);
+        int days = cal.get(Calendar.DAY_OF_MONTH);
+
+       // addEventsC(0,days);
+       // addEventsC(0,28);
+       // addEventsC(0,29);
 
         calendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
@@ -138,9 +141,6 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
             }
 
         });
-
-
-
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -178,12 +178,6 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
         mLV = (ListView) findViewById(R.id.listView);
 
-
-
-
-
-
-
         mLV.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
@@ -195,9 +189,7 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
                 });
 
 
-
-
-        /*191行まで常駐通知の作成*/
+        /*nm.notify()まで常駐通知の作成*/
         Intent intent = new Intent(this, ScheduleEditActivity.class/*ここで指定したクラスが通知をタップした時に呼び出される*/);
         intent.putExtra("PARAM", 1);
         PendingIntent penintent = PendingIntent.getActivity(this,
@@ -214,6 +206,9 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nm.notify(1, notification);    //引数は適当に
+        //TODO
+//        calendarViewAE = calendarView;
+        addEventsC(ScheduleEditActivity.finM,ScheduleEditActivity.finD);
     }
 
 
@@ -234,14 +229,11 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
 
         Date date = new Date(year-1900,month,dayOfMonth);
 
-
         date.setHours(00);
         date.setMinutes(00);
         date.setSeconds(00);
 
-
         RealmQuery<Schedule> rQ = mR.where(Schedule.class);
-
 
         System.out.println("scheduleDBの中身" + mR.where(Schedule.class).findAll());
 
@@ -253,4 +245,37 @@ public class MainActivity extends AppCompatActivity implements CalendarView.OnDa
         adapter = new ScheduleAdapter(schedules,cv);
         mLV.setAdapter(adapter);
     }
+
+    public void addEventsC (int month ,int day) {
+
+        addEvents (calendarView, month ,day);
+        // Refresh calendar to update events
+        calendarView.invalidate ();
+    }
+
+
+    // Adding events
+    private static void addEvents ( CompactCalendarView compactCalendarView , int month , int day ) {
+
+
+        Calendar currentCalender = Calendar .  getInstance ( Locale . getDefault ());
+        currentCalender.setTime ( new Date ());
+        currentCalender.set ( Calendar.DAY_OF_MONTH , 1 );
+        Date firstDayOfMonth = currentCalender.getTime ();
+            currentCalender.setTime ( firstDayOfMonth );
+            if ( month > - 1 ) {
+                currentCalender.set(Calendar.MONTH, month);
+            }
+            currentCalender.add ( Calendar.DATE , day);
+            setToMidnight ( currentCalender );
+            compactCalendarView.addEvent( new CalendarDayEvent( currentCalender.getTimeInMillis(), Color.argb ( 255 , 255 , 255 , 255 )),true );
+    }
+
+    private static void setToMidnight ( Calendar calendar ) {
+        calendar.set ( Calendar.HOUR_OF_DAY , 0 );
+        calendar.set ( Calendar.MINUTE , 0 );
+        calendar.set ( Calendar.SECOND , 0 );
+        calendar.set ( Calendar.MILLISECOND , 0 );
+    }
+
 }
